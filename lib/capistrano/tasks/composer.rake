@@ -24,6 +24,7 @@ namespace :composer do
         execute fetch(:composer_php), php_ini, fetch(:composer_execute), args[:command], args[:options]
       end
     end
+    Rake::Task[t.name].reenable
   end
 
   task :install, :options do |t, args|
