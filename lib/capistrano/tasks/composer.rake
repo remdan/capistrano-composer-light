@@ -12,6 +12,7 @@ namespace :composer do
         end
       end
     end
+    Rake::Task[t.name].reenable
   end
 
   task :run, :command, :options do |t, args|
@@ -29,13 +30,16 @@ namespace :composer do
 
   task :install, :options do |t, args|
     invoke "composer:run", :install, args[:options]
+    Rake::Task[t.name].reenable
   end
 
   task :update, :options do |t, args|
     invoke "composer:run", :update, args[:options]
+    Rake::Task[t.name].reenable
   end
 
   task :self_update, :options do |t, args|
     invoke "composer:run", :selfupdate, args[:options]
+    Rake::Task[t.name].reenable
   end
 end

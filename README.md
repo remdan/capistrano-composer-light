@@ -6,12 +6,22 @@ If you need something from the Composer, so hook into the Capistrano [flow][1] b
 
 ## Installation
 
+Add this line to your application's Gemfile:
+
 ```
 # Gemfile
 gem 'capistrano',  '~> 3.1'
 gem 'capistrano-composer-light', '~> 0.0.1'
 ```
 
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install capistrano-composer-light
+    
 ## Usage
 
 Require capistrano-composer-light in your cap file
@@ -48,7 +58,7 @@ set :composer_roles,                    :all
 
 ### Integrated common tasks
 
-The folowing common tasks are already integrated:
+The folowing common tasks are already integrated and every task is reenabled, that means you can call them many times if you need.
 * ```composer:installer```
 * ```composer:self_update```
 * ```composer:install```
@@ -63,17 +73,30 @@ So you can use them with hooks like this:
 
 Or if you need to pass some options:
 ```ruby
-after :deploy, :updated do
-  invoke "composer:installer", "-- --version=1.0.0-alpha9"
-  invoke "composer:install", "--optimize-autoloader"
+namespace :deploy do
+
+  task :composer_installer do
+    invoke "composer:installer", "-- --version=1.0.0-alpha9"
+  end
+
+  task :composer_install do
+    invoke "composer:install", "--optimize-autoloader"
+  end
+
+  after "deploy:updated", "deploy:composer_installer"
+  after "deploy:updated", "deploy:composer_install"
 end
+```
+
+Your tasks can you also define in a separate .rake and load it in you Capfile:
+```ruby
+# Load custom tasks from `lib/capistrano/tasks' if you have any defined
+#Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
 ```
 
 If you need a not already provided task you can use "composer:run"  
 ```ruby
-after :deploy, :updated do
-  invoke "composer:run", "remove", "--dev"
-end
+invoke "composer:run", "remove", "--dev"
 ```
 
 [1]: http://capistranorb.com/documentation/getting-started/flow/
